@@ -6,9 +6,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Free Up Cloud Disk Space
         run: |
@@ -26,13 +27,12 @@ jobs:
           mkdir -p ~/bin
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
           chmod a+x ~/bin/repo
-          export PATH=~/bin:$PATH
 
       - name: Sync Android Source Code
         run: |
-          mkdir android-source && cd android-source
-          repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --depth=1
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          mkdir -p android-source && cd android-source
+          ~/bin/repo init -u https://github.com/LineageOS/android.git -b lineage-20.0 --depth=1
+          ~/bin/repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
       - name: Build ROM
         run: |
@@ -42,7 +42,7 @@ jobs:
           mka bacon -j$(nproc --all)
 
       - name: Upload Output ROM
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: emeroOS27-ROM
           path: android-source/out/target/product/*/*.zip
